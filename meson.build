@@ -8,11 +8,6 @@ add_project_arguments('-Wno-unused-variable', language: 'cpp')
 
 cpp = meson.get_compiler('cpp')
 
-arch = build_machine.cpu_family()
-if arch == 'aarch64'
-	arch = 'arm64'
-endif
-
 wlserverdep    = dependency('wayland-server')
 wlprotocolsdep = dependency('wayland-protocols')
 
@@ -93,37 +88,57 @@ foreach name, path : protocols_cpp
 endforeach
 
 
-shared_library('wayland-server-inproc',
-	[
-		'WaylandServer.cpp',
-		'WlResource.cpp',
-		'WlGlobal.cpp',
-		'HaikuShm.cpp',
-		'HaikuCompositor.cpp',
-		'HaikuSubcompositor.cpp',
-		'HaikuXdgShell.cpp',
-		'HaikuXdgPositioner.cpp',
-		'HaikuXdgSurface.cpp',
-		'HaikuXdgToplevel.cpp',
-		'HaikuXdgPopup.cpp',
-		'HaikuServerDecoration.cpp',
-		'HaikuOutput.cpp',
-		'HaikuSeat.cpp',
-		'XkbKeymap.cpp',
-		'HaikuDataDeviceManager.cpp',
-		wl_files
-	],
-	name_prefix: '',
+libwayland_server = shared_library('wayland-server-core',
+	'WaylandServer.cpp',
+	'WaylandServerIps2.cpp',
+	'WlResource.cpp',
+	'WlGlobal.cpp',
+	'HaikuShm.cpp',
+	'HaikuCompositor.cpp',
+	'HaikuSubcompositor.cpp',
+	'HaikuXdgShell.cpp',
+	'HaikuXdgPositioner.cpp',
+	'HaikuXdgSurface.cpp',
+	'HaikuXdgToplevel.cpp',
+	'HaikuXdgPopup.cpp',
+	'HaikuServerDecoration.cpp',
+	'HaikuOutput.cpp',
+	'HaikuSeat.cpp',
+	'XkbKeymap.cpp',
+	'HaikuDataDeviceManager.cpp',
+	wl_files,
 	include_directories: [
 		'/boot/system/develop/headers/private/shared',
 		'/boot/system/develop/headers/private/interface',
 		'/boot/system/develop/headers/private/system',
-		'/boot/system/develop/headers/private/system/arch/' + arch,
+		'/boot/system/develop/headers/private/system/arch/x86_64',
 	],
 	dependencies: [
 		cpp.find_library('be'),
 		wlserverdep,
 	],
 	gnu_symbol_visibility: 'hidden',
-	install : true
+	install: true
+)
+
+dep_libwayland_server = declare_dependency(
+	link_with: libwayland_server
+)
+
+shared_library('wayland-server-inproc',
+	[
+		'WaylandServerIps.cpp',
+	],
+	name_prefix: '',
+	include_directories: [
+		'/boot/system/develop/headers/private/shared',
+		'/boot/system/develop/headers/private/interface',
+	],
+	dependencies: [
+		cpp.find_library('be'),
+		wlserverdep,
+		dep_libwayland_server
+	],
+	gnu_symbol_visibility: 'hidden',
+	install: true
 )

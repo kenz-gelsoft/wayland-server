@@ -129,7 +129,7 @@ void HaikuXdgToplevel::HandleSetParent(struct wl_resource *_parent)
 		}
 	} else {
 		XdgSurface()->fRoot = parent->XdgSurface()->fRoot;
-		fWindow->SetFeel(B_FLOATING_SUBSET_WINDOW_FEEL);
+		fWindow->SetFeel(B_MODAL_SUBSET_WINDOW_FEEL);
 		fWindow->AddToSubset(parent->XdgSurface()->fRoot->Window());
 	}
 }
@@ -221,7 +221,7 @@ HaikuXdgToplevel *HaikuXdgToplevel::Create(HaikuXdgSurface *xdgSurface, uint32_t
 		wl_client_post_no_memory(xdgSurface->Client());
 		return NULL;
 	}
-	if (!xdgToplevel->Init(xdgSurface->Client(), xdgSurface->Version(), id)) {
+	if (!xdgToplevel->Init(xdgSurface->Client(), wl_resource_get_version(xdgSurface->ToResource()), id)) {
 		return NULL;
 	}
 

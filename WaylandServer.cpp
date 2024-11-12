@@ -16,27 +16,27 @@
 static void Assert(bool cond) {if (!cond) abort();}
 
 
-Application::Application(): BApplication("application/x-vnd.Wayland-App")
+WaylandApplication::WaylandApplication(): BApplication("application/x-vnd.Wayland-App")
 {
 }
 
-void Application::AddClient(struct wl_client *client)
+void WaylandApplication::AddClient(struct wl_client *client)
 {
 	fClient = client;
 }
 
-thread_id Application::Run()
+thread_id WaylandApplication::Run()
 {
 	return BLooper::Run();
 }
 
-void Application::Quit()
+void WaylandApplication::Quit()
 {
 	BApplication::Quit();
 	exit(0);
 }
 
-void Application::MessageReceived(BMessage *msg)
+void WaylandApplication::MessageReceived(BMessage *msg)
 {
 	switch (msg->what) {
 	case B_KEY_MAP_LOADED:

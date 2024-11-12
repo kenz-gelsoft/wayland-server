@@ -50,7 +50,7 @@ void ServerHandler::MessageReceived(BMessage *msg)
 extern "C" _EXPORT int wl_ips_client_connected(void **clientOut, void *clientDisplay, client_enqueue_proc display_enqueue)
 {
 	if (be_app == NULL) {
-		new Application();
+		new WaylandApplication();
 		be_app->Run();
 	}
 	if (gServerHandler.Looper() == NULL) {
@@ -76,7 +76,7 @@ extern "C" _EXPORT int wl_ips_client_connected(void **clientOut, void *clientDis
 	fprintf(stderr, "display: %p\n", sDisplay);
 	struct wl_client *client = wl_client_create_ips(sDisplay, clientDisplay, display_enqueue);
 	fprintf(stderr, "client: %p\n", client);
-	static_cast<Application*>(be_app)->AddClient(client);
+	static_cast<WaylandApplication*>(be_app)->AddClient(client);
 
 	*clientOut = client;
 

@@ -2,14 +2,14 @@
 
 #include <Application.h>
 
-class Application: public BApplication {
+class WaylandApplication: public BApplication {
 private:
 	// TODO: support multiple clients
 	struct wl_client *fClient{};
 
 public:
-	Application();
-	virtual ~Application() = default;
+	WaylandApplication();
+	virtual ~WaylandApplication() = default;
 
 	void AddClient(struct wl_client *client);
 

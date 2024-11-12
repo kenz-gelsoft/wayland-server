@@ -1,6 +1,6 @@
 #pragma once
 
-#include "WaylandServer.h"
+#include "WaylandServerIps.h"
 
 
 class WaylandEnv {

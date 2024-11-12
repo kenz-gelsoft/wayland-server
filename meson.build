@@ -96,6 +96,7 @@ endforeach
 shared_library('wayland-server-inproc',
 	[
 		'WaylandServer.cpp',
+		'WaylandServerIps.cpp',
 		'WlResource.cpp',
 		'WlGlobal.cpp',
 		'HaikuShm.cpp',

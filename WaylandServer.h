@@ -1,20 +1,19 @@
 #pragma once
 
-#include <Handler.h>
-#include <Messenger.h>
+#include <Application.h>
 
+class Application: public BApplication {
+private:
+	// TODO: support multiple clients
+	struct wl_client *fClient{};
 
-class ServerHandler: public BHandler {
 public:
-	enum {
-		closureSendMsg = 1,
-	};
+	Application();
+	virtual ~Application() = default;
 
-	ServerHandler();
-	virtual ~ServerHandler() = default;
+	void AddClient(struct wl_client *client);
 
-	void MessageReceived(BMessage *msg) final;
+	thread_id Run() override;
+	void Quit() override;
+	void MessageReceived(BMessage *msg) override;
 };
-
-extern ServerHandler gServerHandler;
-extern BMessenger gServerMessenger;

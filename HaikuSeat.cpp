@@ -253,7 +253,9 @@ void HaikuSeatGlobal::SetPointerFocus(HaikuSurface *surface, const BMessage &msg
 			for (HaikuPointer *pointer = fPointerIfaces.First(); pointer != NULL; pointer = fPointerIfaces.GetNext(pointer)) {
 				if (pointer->Client() != fPointerFocus->Client()) continue;
 				pointer->SendLeave(NextSerial(), fPointerFocus->ToResource());
-				pointer->SendFrame();
+				if (pointer->Version() >= 5) {
+					pointer->SendFrame();
+				}
 			}
 			break;
 		case trackDrag:
@@ -281,7 +283,9 @@ void HaikuSeatGlobal::SetPointerFocus(HaikuSurface *surface, const BMessage &msg
 			for (HaikuPointer *pointer = fPointerIfaces.First(); pointer != NULL; pointer = fPointerIfaces.GetNext(pointer)) {
 				if (pointer->Client() != surface->Client()) continue;
 				pointer->SendEnter(NextSerial(), surface->ToResource(), wl_fixed_from_double(where.x), wl_fixed_from_double(where.y));
-				pointer->SendFrame();
+				if (pointer->Version() >= 5) {
+					pointer->SendFrame();
+				}
 			}
 			break;
 			case trackDrag: {
@@ -447,7 +451,9 @@ bool HaikuSeatGlobal::MessageReceived(HaikuSurface *surface, BMessage *msg)
 			}
 			for (HaikuPointer *pointer = fPointerIfaces.First(); pointer != NULL; pointer = fPointerIfaces.GetNext(pointer)) {
 				if (pointer->Client() != fPointerFocus->Client()) continue;
-				pointer->SendFrame();
+				if (pointer->Version() >= 5) {
+					pointer->SendFrame();
+				}
 			}
 			return true;
 		}
@@ -480,7 +486,9 @@ bool HaikuSeatGlobal::MessageReceived(HaikuSurface *surface, BMessage *msg)
 					}
 					for (HaikuPointer *pointer = fPointerIfaces.First(); pointer != NULL; pointer = fPointerIfaces.GetNext(pointer)) {
 						if (pointer->Client() != fPointerFocus->Client()) continue;
-						pointer->SendFrame();
+						if (pointer->Version() >= 5) {
+							pointer->SendFrame();
+						}
 					}
 					break;
 				}
@@ -508,7 +516,9 @@ bool HaikuSeatGlobal::MessageReceived(HaikuSurface *surface, BMessage *msg)
 					}
 					for (HaikuPointer *pointer = fPointerIfaces.First(); pointer != NULL; pointer = fPointerIfaces.GetNext(pointer)) {
 						if (pointer->Client() != fPointerFocus->Client()) continue;
-						pointer->SendFrame();
+						if (pointer->Version() >= 5) {
+							pointer->SendFrame();
+						}
 					}
 					break;
 				}
@@ -535,7 +545,9 @@ bool HaikuSeatGlobal::MessageReceived(HaikuSurface *surface, BMessage *msg)
 					for (HaikuPointer *pointer = fPointerIfaces.First(); pointer != NULL; pointer = fPointerIfaces.GetNext(pointer)) {
 						if (pointer->Client() != fPointerFocus->Client()) continue;
 						pointer->SendMotion(when / 1000, wl_fixed_from_double(where.x), wl_fixed_from_double(where.y));
-						pointer->SendFrame();
+						if (pointer->Version() >= 5) {
+							pointer->SendFrame();
+						}
 					}
 					break;
 				}

@@ -112,7 +112,7 @@ shared_library('wayland-server-inproc',
 		'HaikuSeat.cpp',
 		'XkbKeymap.cpp',
 		'HaikuDataDeviceManager.cpp',
-		wl_files
+		wl_files,
 	],
 	name_prefix: '',
 	include_directories: [

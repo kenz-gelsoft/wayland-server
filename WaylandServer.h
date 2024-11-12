@@ -1,19 +1,39 @@
 #pragma once
 
-#include <Application.h>
+#include <wayland-server-core.h>
+#include <SupportDefs.h>
 
-class WaylandApplication: public BApplication {
+
+class BLooper;
+class HaikuSeatGlobal;
+class WaylandApplication;
+
+
+class _EXPORT WaylandServer {
 private:
-	// TODO: support multiple clients
-	struct wl_client *fClient{};
+	friend class WaylandApplication;
+
+	static BLooper *sLooper;
+
+	struct wl_display *fDisplay{};
+
+	WaylandApplication* fApplication {};
+	HaikuSeatGlobal *fSeatGlobal {};
+
+	status_t Init();
 
 public:
-	WaylandApplication();
-	virtual ~WaylandApplication() = default;
+	static WaylandServer *Create(struct wl_display *display);
+	WaylandServer(struct wl_display *display): fDisplay(display) {}
+	~WaylandServer();
 
-	void AddClient(struct wl_client *client);
+	static inline BLooper *GetLooper() {return sLooper;}
 
-	thread_id Run() override;
-	void Quit() override;
-	void MessageReceived(BMessage *msg) override;
+	void Lock();
+	void Unlock();
+
+	inline struct wl_display *GetDisplay() {return fDisplay;}
+
+	void ClientConnected(struct wl_client *client);
+	void ClientDisconnected(struct wl_client *client);
 };

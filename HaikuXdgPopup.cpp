@@ -68,7 +68,7 @@ HaikuXdgPopup *HaikuXdgPopup::Create(HaikuXdgSurface *xdgSurface, uint32_t id, s
 		wl_client_post_no_memory(xdgSurface->Client());
 		return NULL;
 	}
-	if (!xdgPopup->Init(xdgSurface->Client(), xdgSurface->Version(), id)) {
+	if (!xdgPopup->Init(xdgSurface->Client(), wl_resource_get_version(xdgSurface->ToResource()), id)) {
 		return NULL;
 	}
 
@@ -78,9 +78,8 @@ HaikuXdgPopup *HaikuXdgPopup::Create(HaikuXdgSurface *xdgSurface, uint32_t id, s
 
 	xdgPopup->UpdatePosition(_positioner);
 
-	xdgPopup->fWindow = new WaylandPopupWindow(xdgPopup, BRect(), "", B_NO_BORDER_WINDOW_LOOK, B_FLOATING_SUBSET_WINDOW_FEEL, B_AVOID_FOCUS);
+	xdgPopup->fWindow = new WaylandPopupWindow(xdgPopup, BRect(), "", B_NO_BORDER_WINDOW_LOOK, B_NORMAL_WINDOW_FEEL, B_AVOID_FOCUS);
 	xdgSurface->Surface()->AttachWindow(xdgPopup->fWindow);
-	xdgPopup->fWindow->AddToSubset(xdgPopup->fXdgSurface->fRoot->Window());
 
 	return xdgPopup;
 }

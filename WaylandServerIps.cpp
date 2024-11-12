@@ -17,6 +17,7 @@ wl_client_dispatch(struct wl_client *client, struct wl_closure *closure);
 
 typedef int (*client_enqueue_proc)(void *client_display, struct wl_closure *closure);
 
+WaylandServer *gWaylandServer {};
 
 static struct wl_display *sDisplay;
 
@@ -49,9 +50,9 @@ void ServerHandler::MessageReceived(BMessage *msg)
 
 extern "C" _EXPORT int wl_ips_client_connected(void **clientOut, void *clientDisplay, client_enqueue_proc display_enqueue)
 {
-	if (be_app == NULL) {
-		new WaylandApplication();
-		be_app->Run();
+	if (gWaylandServer == NULL) {
+		sDisplay = wl_display_create();
+		gWaylandServer = WaylandServer::Create(sDisplay);
 	}
 	if (gServerHandler.Looper() == NULL) {
 		AppKitPtrs::LockedPtr(be_app)->AddHandler(&gServerHandler);
@@ -59,31 +60,17 @@ extern "C" _EXPORT int wl_ips_client_connected(void **clientOut, void *clientDis
 	}
 
 	fprintf(stderr, "wl_ips_client_connected\n");
-	if (sDisplay == NULL) {
-		sDisplay = wl_display_create();
-
-#if 0
-		Assert(HaikuShmGlobal::Create(sDisplay) != NULL);
-		Assert(HaikuCompositorGlobal::Create(sDisplay) != NULL);
-		Assert(HaikuSubcompositorGlobal::Create(sDisplay) != NULL);
-		Assert(HaikuOutputGlobal::Create(sDisplay) != NULL);
-		Assert(HaikuDataDeviceManagerGlobal::Create(sDisplay) != NULL);
-		Assert(HaikuSeatGlobal::Create(sDisplay) != NULL);
-		Assert(HaikuXdgShell::Create(sDisplay) != NULL);
-		Assert(HaikuServerDecorationManagerGlobal::Create(sDisplay) != NULL);
-#endif
-	}
-	fprintf(stderr, "display: %p\n", sDisplay);
-	struct wl_client *client = wl_client_create_ips(sDisplay, clientDisplay, display_enqueue);
+	struct wl_display *display = gWaylandServer->GetDisplay();
+	fprintf(stderr, "display: %p\n", display);
+	struct wl_client *client = wl_client_create_ips(display, clientDisplay, display_enqueue);
 	fprintf(stderr, "client: %p\n", client);
-	static_cast<WaylandApplication*>(be_app)->AddClient(client);
+	gWaylandServer->ClientConnected(client);
 
 	*clientOut = client;
 
 	return 0;
 /*
 	wl_client_destroy(client);
-	wl_display_destroy(display);
 */
 }
 

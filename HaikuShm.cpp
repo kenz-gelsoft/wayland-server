@@ -78,8 +78,7 @@ void HaikuShmPool::HandleCreateBuffer(uint32_t id, int32_t offset, int32_t width
 		wl_resource_post_error(ToResource(), HaikuShm::errorInvalidFormat, "unsupported format: %" PRIu32, format);
 		return;
 	}
-	buffer->fAreaRef = fAreaRef;
-	buffer->fBitmap.emplace(fAreaRef->Area(), offset, BRect(0, 0, width - 1, height - 1), 0, colorSpace, stride);
+	buffer->fBitmap.emplace(fArea.Get(), offset, BRect(0, 0, width - 1, height - 1), 0, colorSpace, stride);
 	if (buffer->fBitmap.value().InitCheck() < B_OK) {
 		wl_resource_post_error(ToResource(), HaikuShm::errorInvalidFormat, "failed to create BBitmap: %s", strerror(buffer->fBitmap.value().InitCheck()));
 		return;
@@ -97,7 +96,7 @@ void HaikuShmPool::Remap(int32_t size)
 		set_area_protection(fArea.Get(), B_READ_AREA | B_WRITE_AREA | B_CLONEABLE_AREA);
 	}
 #endif
-	AreaDeleter area(_kern_map_file(
+	fArea.SetTo(_kern_map_file(
 		"wl_shm",
 		&fAddress,
 		B_ANY_ADDRESS,
@@ -108,16 +107,10 @@ void HaikuShmPool::Remap(int32_t size)
 		fFd.Get(),
 		0
 	));
-	if (!area.IsSet()) {
-		wl_resource_post_error(ToResource(), HaikuShm::errorInvalidFd, "failed mmap fd %d: %s", fFd.Get(), strerror(area.Get()));
+	if (!fArea.IsSet()) {
+		wl_resource_post_error(ToResource(), HaikuShm::errorInvalidFd, "failed mmap fd %d: %s", fFd.Get(), strerror(fArea.Get()));
 		return;
 	}
-	fAreaRef.SetTo(new(std::nothrow) HaikuShmAreaRef(area.Get()), true);
-	if (!fAreaRef.IsSet()) {
-		wl_client_post_no_memory(Client());
-		return;
-	}
-	area.Detach();
 	fSize = size;
 }
 

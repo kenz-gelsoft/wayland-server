@@ -90,7 +90,6 @@ endforeach
 
 libwayland_server = shared_library('wayland-server-core',
 	'WaylandServer.cpp',
-	'WaylandServerIps2.cpp',
 	'WlResource.cpp',
 	'WlGlobal.cpp',
 	'HaikuShm.cpp',
